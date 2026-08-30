@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>推敲 — 自己テスト</title>
+<style>
+  body { background: #101216; color: #dde3ec; font-family: ui-monospace, Consolas, monospace;
+         font-size: 13px; padding: 24px; line-height: 1.8; }
+  h1 { font-size: 18px; letter-spacing: .1em; }
+  #summary { margin: 12px 0 20px; padding: 10px 14px; border: 1px solid #2b313b; border-radius: 4px; }
+  .ok { color: #4cb782; }
+  .ng { color: #e5695f; }
+  table { border-collapse: collapse; width: 100%; }
+  td { padding: 3px 8px; border-bottom: 1px solid #1c2027; vertical-align: top; }
+  td.mark { width: 28px; }
+  td.detail { color: #6b7480; font-size: 11.5px; }
+</style>
+</head>
+<body>
+<h1>推敲 — 自己テスト</h1>
+<div id="summary">実行中…</div>
+<table id="rows"></table>
+
+<script src="src/core/core.js"></script>
+<script src="src/core/text.js"></script>
+<script src="src/core/dict-language.js"></script>
+<script src="src/core/dict-rating.js"></script>
+<script src="src/core/rules-proofread.js"></script>
+<script src="src/core/rules-consistency.js"></script>
+<script src="src/core/rules-expression.js"></script>
+<script src="src/core/rules-vocabulary.js"></script>
+<script src="src/core/rules-structure.js"></script>
+<script src="src/core/rules-rating.js"></script>
+<script src="src/core/rules-plain-mix.js"></script>
+<script src="src/core/rules-identifiable.js"></script>
+<script src="src/core/metrics.js"></script>
+<script src="src/core/audience.js"></script>
+<script src="src/core/presets.js"></script>
+<script src="src/core/analyze.js"></script>
+<script src="src/core/noteio.js"></script>
+<script src="src/core/ai.js"></script>
+<script src="src/core/preview.js"></script>
+<script src="src/core/selftest.js"></script>
+<script>
+(function () {
+  var results;
+  try {
+    results = Suikou.runSelfTest();
+  } catch (e) {
+    document.getElementById('summary').innerHTML =
+      '<span class="ng">テスト自体が例外で停止しました: ' + (e && e.stack ? e.stack : e) + '</span>';
+    return;
+  }
+  var pass = results.filter(function (r) { return r.ok; }).length;
+  var summary = document.getElementById('summary');
+  summary.innerHTML = '<b>' + pass + ' / ' + results.length + '</b> 件成功　' +
+    (pass === results.length ? '<span class="ok">すべて通過</span>' : '<span class="ng">失敗あり</span>') +
+    '　ルール総数 ' + Suikou.rules.length;
+  var table = document.getElementById('rows');
+  results.forEach(function (r) {
+    var tr = document.createElement('tr');
+    var td1 = document.createElement('td');
+    td1.className = 'mark ' + (r.ok ? 'ok' : 'ng');
+    td1.textContent = r.ok ? 'OK' : 'NG';
+    var td2 = document.createElement('td');
+    td2.textContent = r.name;
+    var td3 = document.createElement('td');
+    td3.className = 'detail';
+    td3.textContent = r.ok ? '' : r.detail;
+    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+    table.appendChild(tr);
+  });
+})();
+</script>
+</body>
+</html>

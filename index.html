@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>推敲 — note 執筆支援ツール</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">推敲</span>
+      <span class="sub">suikou / note 執筆支援</span>
+    </div>
+    <button type="button" id="btn-more" class="more-btn">メニュー</button>
+
+    <div class="controls">
+      <label>プリセット <select id="preset"></select></label>
+      <label>レーティング <select id="rating"></select></label>
+      <label>文体 <select id="style"></select></label>
+    </div>
+
+    <div class="spacer"></div>
+    <div class="counters" id="counters"></div>
+
+    <div class="actions">
+      <div class="menu-wrap">
+        <button id="btn-import" title="ファイルや note からの取り込み">取り込み ▾</button>
+        <div class="menu" id="menu-import" hidden>
+          <div class="grp">note の記事1本から</div>
+          <button data-act="paste-note">クリップボードから取り込む<small>note のエディタで Ctrl+A → Ctrl+C してから押します</small></button>
+          <button data-act="file-page">保存した note のページを開く<small>.html　共有用リンクのプレビューを Ctrl+S で保存したもの</small></button>
+          <div class="sep"></div>
+          <div class="grp">ファイルから</div>
+          <button data-act="file-text">テキスト / Markdown を開く<small>.txt .md</small></button>
+          <button data-act="file-note">note のエクスポートを開く<small>.xml（WXR）または MT形式の .txt　※全記事の一括書き出し</small></button>
+          <div class="sep"></div>
+          <button data-act="paste-help">note との受け渡しについて</button>
+        </div>
+      </div>
+      <div class="menu-wrap">
+        <button id="btn-export" title="note へ渡す / 書き出す">書き出し ▾</button>
+        <div class="menu" id="menu-export" hidden>
+          <div class="grp">note のエディタへ貼る</div>
+          <button data-act="copy-html">note用HTMLをコピー<small>見出し・引用・箇条書き・太字が生きたまま貼れます</small></button>
+          <button data-act="copy-plain">文字だけコピー<small>記法の記号を外した素の本文</small></button>
+          <div class="sep"></div>
+          <div class="grp">note のインポート機能へ</div>
+          <button data-act="save-wxr">WXR形式で保存（.xml）<small>note の設定 &gt; インポート に読ませます。下書きとして入ります</small></button>
+          <button data-act="save-mt">MT形式で保存（.txt）<small>WXR で通らないときの代替</small></button>
+          <div class="sep"></div>
+          <div class="grp">手元に残す</div>
+          <button data-act="save-md">推敲記法で保存（.md）</button>
+          <button data-act="save-report">推敲レポートを保存（.md）</button>
+        </div>
+      </div>
+      <button id="btn-theme" title="明るいテーマ / 暗いテーマ">◐</button>
+      <button id="btn-focus" title="Ctrl+Shift+F">集中</button>
+    </div>
+  </header>
+
+  <nav id="mobile-nav" class="mobile-nav" aria-label="執筆と指摘の切り替え">
+    <button type="button" data-pane="write">執筆</button>
+    <button type="button" data-pane="review">指摘 <span id="mobile-issue-count" class="count"></span></button>
+  </nav>
+
+  <main>
+    <section class="editor-pane">
+      <div class="meta-fields">
+        <input id="title" type="text" spellcheck="false"
+               placeholder="タイトル（note の一覧・検索・SNS に出ます）">
+        <input id="hashtags" type="hidden" value="">
+        <div class="view-switch" id="view-switch">
+          <button data-view="write" class="active">執筆</button>
+          <button data-view="preview">note風プレビュー</button>
+          <button id="btn-clear" class="danger" style="margin-left:auto" title="タイトルと本文を空にする">消す</button>
+        </div>
+      </div>
+
+      <div id="toolbar" class="toolbar"></div>
+
+      <div class="editor-wrap">
+        <div id="backdrop" class="backdrop editor-shared"><div id="highlights"></div></div>
+        <textarea id="editor" class="editor-shared" spellcheck="false" wrap="soft"
+placeholder="ここに本文を書きます。
+
+・入力は端末の外に出ません（AI 補助を自分で有効にした場合を除きます）。
+・書き換えは行いません。指摘と、考えるための視点だけを返します。
+・上のバーで見出し・引用・箇条書きを付けられます。もう一度押すと外します。
+・画像はファイル選択・貼り付け・ドロップで入れられます。Ctrl+Z で戻せます。
+・note のエディタからコピーして、そのまま貼り付けられます。
+・Ctrl+Enter で即時解析、F8 で次の指摘へ、Ctrl+Shift+F で集中モード。
+
+まず一段落、自分の言葉で書いてみてください。"></textarea>
+        <div id="preview" hidden></div>
+      </div>
+
+      <div class="editor-status" id="editor-status"></div>
+    </section>
+
+    <section class="panel">
+      <nav class="tabs" id="tabs"></nav>
+
+      <div class="tab-body" id="tab-issues">
+        <div class="filters" id="filters"></div>
+        <div id="issue-list"></div>
+      </div>
+
+      <div class="tab-body" id="tab-metrics" hidden></div>
+      <div class="tab-body" id="tab-audience" hidden></div>
+      <div class="tab-body" id="tab-settings" hidden></div>
+    </section>
+  </main>
+
+</div>
+
+<dialog id="dialog">
+  <div class="dlg-head"><span id="dlg-title"></span><span class="spacer"></span></div>
+  <div class="dlg-body" id="dlg-body"></div>
+  <div class="dlg-foot" id="dlg-foot"></div>
+</dialog>
+
+<!-- 中核 -->
+<script src="src/core/core.js"></script>
+<script src="src/core/text.js"></script>
+<script src="src/core/dict-language.js"></script>
+<script src="src/core/dict-rating.js"></script>
+<!-- ルール -->
+<script src="src/core/rules-proofread.js"></script>
+<script src="src/core/rules-consistency.js"></script>
+<script src="src/core/rules-expression.js"></script>
+<script src="src/core/rules-vocabulary.js"></script>
+<script src="src/core/rules-structure.js"></script>
+<script src="src/core/rules-rating.js"></script>
+<script src="src/core/rules-plain-mix.js"></script>
+<script src="src/core/rules-identifiable.js"></script>
+<!-- 解析 -->
+<script src="src/core/metrics.js"></script>
+<script src="src/core/audience.js"></script>
+<script src="src/core/presets.js"></script>
+<script src="src/core/analyze.js"></script>
+<!-- note 連携 / AI（任意） -->
+<script src="src/core/noteio.js"></script>
+<script src="src/core/ai.js"></script>
+<script src="src/core/preview.js"></script>
+<!-- UI（状態と小道具を先に、起動を最後に） -->
+<script src="src/ui/state.js"></script>
+<script src="src/ui/dom.js"></script>
+<script src="src/ui/store.js"></script>
+<script src="src/ui/dialog.js"></script>
+<script src="src/ui/run.js"></script>
+<script src="src/ui/editor.js"></script>
+<script src="src/ui/toolbar.js"></script>
+<script src="src/ui/images.js"></script>
+<script src="src/ui/issue-card.js"></script>
+<script src="src/ui/issue-group.js"></script>
+<script src="src/ui/issues.js"></script>
+<script src="src/ui/panel-metrics.js"></script>
+<script src="src/ui/panel-audience.js"></script>
+<script src="src/ui/ai-panel.js"></script>
+<script src="src/ui/ai-review.js"></script>
+<script src="src/ui/settings.js"></script>
+<script src="src/ui/settings-note.js"></script>
+<script src="src/ui/settings-dict.js"></script>
+<script src="src/ui/settings-rules.js"></script>
+<script src="src/ui/note-import.js"></script>
+<script src="src/ui/note-export.js"></script>
+<script src="src/ui/view.js"></script>
+<script src="src/ui/layout.js"></script>
+<script src="src/ui/app.js"></script>
+</body>
+</html>
