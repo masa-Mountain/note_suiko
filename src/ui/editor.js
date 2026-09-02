@@ -127,7 +127,10 @@
     UI.state.aiState = null;
     UI.state.resolved = {};
     UI.state.revealed = {};
+    UI.state.issueArchive = [];
+    UI.state.showArchive = false;
     UI.saveMarks();
+    UI.saveArchive();
     UI.setBody('');
     if (UI.state.activeTab === 'settings') UI.renderSettings();
   };

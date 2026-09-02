@@ -184,6 +184,13 @@
     check('note: 引用が blockquote になる', noteHtml.indexOf('<blockquote>') >= 0);
     check('note: 箇条書きが ul になる', /<ul><li>箇条書き1<\/li><li>箇条書き2<\/li><\/ul>/.test(noteHtml), noteHtml);
 
+    var tightHtml = S.noteio.toNoteHtml('一行目。\n二行目。');
+    check('note: 書き出し HTML に余計な改行がない', tightHtml.indexOf('\n') < 0, tightHtml);
+    var tightIn = S.noteio.fromHtml('<p>一行目。</p><p>二行目。</p>');
+    check('note: 取り込みで段落間の空行を増やさない', tightIn === '一行目。\n二行目。', tightIn);
+    var tocIn = S.noteio.fromHtml('<div data-name="tableOfContents">目次</div><p>本文</p>');
+    check('note: 目次ブロックを [目次] にする', tocIn.indexOf('[目次]') >= 0 && tocIn.indexOf('本文') >= 0, tocIn);
+
     var roundTrip = S.noteio.fromHtml(noteHtml);
     check('note: HTML から記法に戻せる（見出し）', roundTrip.indexOf('# 大見出し') >= 0, roundTrip);
     check('note: HTML から記法に戻せる（小見出し）', roundTrip.indexOf('## 小見出し') >= 0, roundTrip);

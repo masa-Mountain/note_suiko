@@ -171,6 +171,20 @@
   }
   N.escapeHtml = escapeHtml;
 
+  /** note の目次ブロックかどうか（コピーでは構造だけ来ることが多い）。 */
+  function _isTocNode(node) {
+    if (!node || node.nodeType !== 1) return false;
+    var hint = [
+      node.getAttribute('class') || '',
+      node.getAttribute('data-name') || '',
+      node.getAttribute('data-type') || '',
+      node.getAttribute('data-node-type') || ''
+    ].join(' ');
+    if (/table[-_ ]?of[-_ ]?contents|\btoc\b|目次/i.test(hint)) return true;
+    var text = (node.textContent || '').trim();
+    return text === '目次' || text === '[目次]';
+  }
+
   function inlineToHtml(s) {
     var out = escapeHtml(s);
     // ルビ（青空文庫式）｜漢字《かんじ》
@@ -197,7 +211,7 @@
           out.push('<h' + (b.level <= 1 ? 2 : 3) + '>' + inlineToHtml(b.text) + '</h' + (b.level <= 1 ? 2 : 3) + '>');
           break;
         case 'p':
-          out.push('<p>' + inlineToHtml(b.text) + '</p>');
+          if (b.text.trim()) out.push('<p>' + inlineToHtml(b.text) + '</p>');
           break;
         case 'quote':
           out.push('<blockquote>' + b.lines.map(function (l) {
@@ -233,7 +247,7 @@
           break;
       }
     });
-    return out.join('\n');
+    return out.join('');
   };
 
   /* =========================================================
@@ -299,7 +313,6 @@
       });
     }
     paras.forEach(function (l) { out.push('> ' + l); });
-    out.push('');
   }
 
   function inlineFromNode(node) {
@@ -338,19 +351,21 @@
   }
 
   function blockFromNode(node, out) {
+    if (_isTocNode(node)) {
+      out.push('[目次]');
+      return true;
+    }
     var tag = node.tagName ? node.tagName.toLowerCase() : '';
     switch (tag) {
       case 'h1':
       case 'h2':
         out.push('# ' + inlineFromNode(node).trim());
-        out.push('');
         return true;
       case 'h3':
       case 'h4':
       case 'h5':
       case 'h6':
         out.push('## ' + inlineFromNode(node).trim());
-        out.push('');
         return true;
       case 'blockquote':
         _pushQuote(node, out);
@@ -363,17 +378,14 @@
           var body = inlineFromNode(items[i]).trim();
           out.push(tag === 'ul' ? '- ' + body : (i + 1) + '. ' + body);
         }
-        out.push('');
         return true;
       case 'hr':
         out.push('---');
-        out.push('');
         return true;
       case 'pre':
         out.push('```');
         out.push(node.textContent.replace(/\n+$/, ''));
         out.push('```');
-        out.push('');
         return true;
       case 'figure':
         if (_isQuoteLike(node) && !node.querySelector('img')) {
@@ -392,16 +404,13 @@
             : link ? (link.getAttribute('href') || '') : node.textContent.trim();
           if (src) out.push(src);
         }
-        out.push('');
         return true;
       case 'img':
         out.push('![](' + (node.getAttribute('src') || '') + ')');
-        out.push('');
         return true;
       case 'iframe':
       case 'embed':
         out.push(node.getAttribute('src') || '');
-        out.push('');
         return true;
       case 'p':
       case 'div':
@@ -412,9 +421,9 @@
         if (tag === 'div' && _hasBlockChild(node)) return false;
         var t = inlineFromNode(node);
         t.split('\n').forEach(function (l) {
-          out.push(l.replace(/^[ \u3000]+|[ \u3000]+$/g, ''));
+          var trimmed = l.replace(/^[ \u3000]+|[ \u3000]+$/g, '');
+          if (trimmed) out.push(trimmed);
         });
-        out.push('');
         return true;
       case 'table':
         // note に表はないので、行ごとの箇条書きに落とす
@@ -425,7 +434,6 @@
           for (var c2 = 0; c2 < cells.length; c2++) parts.push(cells[c2].textContent.trim());
           out.push('- ' + parts.join(' / '));
         }
-        out.push('');
         return true;
       default:
         return false;
@@ -480,25 +488,20 @@
     function walk(node) {
       for (var i = 0; i < node.childNodes.length; i++) {
         var c = node.childNodes[i];
-        if (c.nodeType === 3) {
-          var t = c.nodeValue.replace(/\s+/g, ' ').trim();
-          if (t) { out.push(t); out.push(''); }
-          continue;
-        }
         if (c.nodeType !== 1) continue;
         if (!blockFromNode(c, out)) walk(c);
       }
     }
     walk(root);
-
-    // 空行の連続を1つにまとめる
-    var lines = [];
-    for (var i = 0; i < out.length; i++) {
-      if (out[i] === '' && lines[lines.length - 1] === '') continue;
-      lines.push(out[i]);
+    var lines = out.map(function (l) { return l.replace(/[ \u3000]+$/, ''); });
+    while (lines.length && !lines[0].trim()) lines.shift();
+    while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
+    var compact = [];
+    for (var i = 0; i < lines.length; i++) {
+      if (!lines[i].trim() && compact.length && !compact[compact.length - 1].trim()) continue;
+      compact.push(lines[i]);
     }
-    while (lines.length && lines[lines.length - 1] === '') lines.pop();
-    return lines.join('\n');
+    return compact.join('\n');
   }
 
   /** HTML 文字列を推敲記法へ変換する。ページ全体を渡した場合は本文だけを取り出す。 */

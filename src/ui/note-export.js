@@ -87,6 +87,11 @@
       'copy-html': function () {
         UI.copyAsNoteHtml().then(function () {
           UI.flash(UI.$('btn-export'), 'コピーしました');
+          if (/\[目次\]/.test(UI.el.editor.value)) {
+            UI.dialog('note用HTMLをコピーしました', [
+              '目次（[目次]）は note 上では文字列になります。note のエディタで目次ブロックを入れ直してください。'
+            ]);
+          }
         }).catch(function () {
           UI.dialog('コピーできませんでした', [
             'この環境ではクリップボードへの HTML 書き込みが許可されていません。' +

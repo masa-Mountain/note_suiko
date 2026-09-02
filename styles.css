@@ -488,6 +488,8 @@ ul.plain li { margin-bottom: 4px; }
 
 /* ---------------- 片付けた指摘 ---------------- */
 .issue.dismissed { opacity: .42; }
+.issue.archive { opacity: .92; cursor: pointer; }
+.issue.archive .issue-msg { text-decoration: none; }
 .issue.dismissed .issue-msg { text-decoration: line-through; text-decoration-color: var(--fg-3); }
 .issue-actions .done { color: var(--cat-structure); }
 .issue-actions .ignore { color: var(--fg-3); }

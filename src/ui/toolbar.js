@@ -178,7 +178,9 @@
       UI.h('i', { class: 'sep' }),
       btn('画像', 'エクスプローラーから画像を選ぶ。貼り付け・ドロップもできます', UI.pickImages),
       btn('埋め込み', 'URL だけの行を入れる', _embed),
-      btn('ルビ', '選択中の語にふりがなを付ける', _ruby)
+      btn('ルビ', '選択中の語にふりがなを付ける', _ruby),
+      UI.h('i', { class: 'sep' }),
+      btn('類語', '選択中の語の言い換え候補・Weblio 類語辞典', UI.showThesaurus)
     ].forEach(function (n) { host.appendChild(n); });
   };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

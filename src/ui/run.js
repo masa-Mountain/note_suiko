@@ -66,9 +66,11 @@
    * @returns {void}
    */
   UI.runAnalyze = function () {
+    var prev = UI.state.result;
     var input = UI.currentInput();
     UI.state.result = S.analyze(input);
     _mergeAiIssues(UI.state.result, input.text);
+    UI.trackFixedIssues(prev, UI.state.result);
     UI.state.revealed = {};
     UI.renderCounters();
     UI.renderHighlights();

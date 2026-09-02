@@ -81,12 +81,13 @@
   UI.renderMarkSettings = function (host) {
     var nResolved = Object.keys(UI.state.resolved).length;
     var nSuppressed = Object.keys(UI.state.suppressed).length;
+    var nArchive = UI.state.issueArchive.length;
     host.appendChild(UI.h('h3', { class: 'section', text: '片付けた指摘' }));
     host.appendChild(UI.h('div', {
       class: 'kv',
-      text: '対応済み ' + nResolved + ' 件 / 今後も無視 ' + nSuppressed + ' 件。' +
+      text: '対応済み ' + nResolved + ' 件 / 今後も無視 ' + nSuppressed + ' 件 / 履歴 ' + nArchive + ' 件。' +
         '「対応済み」は同じ語と前後の文脈が一致する指摘を隠します。' +
-        '「今後も無視」はルールと語の組み合わせで、別の原稿でも出さなくなります。'
+        '履歴は対応済み・直して消えた指摘をあとから見るための記録です。'
     }));
     host.appendChild(UI.settingRow([
       UI.h('button', {
@@ -94,6 +95,12 @@
       }),
       UI.h('button', {
         onclick: function () { UI.clearMarks('suppressed'); }, text: '無視リストを空にする'
+      }),
+      UI.h('button', {
+        onclick: function () {
+          if (!nArchive || confirm('指摘の履歴をすべて消します。')) UI.clearArchive();
+        },
+        text: '履歴を空にする'
       })
     ]));
   };

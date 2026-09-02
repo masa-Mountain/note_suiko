@@ -14,7 +14,8 @@
   UI.STORE = {
     draft: 'suikou.draft.v1',
     config: 'suikou.config.v1',
-    marks: 'suikou.marks.v1'
+    marks: 'suikou.marks.v1',
+    archive: 'suikou.archive.v1'
   };
 
   /** DOM 参照。init() で埋める。 */
@@ -32,6 +33,9 @@
     /* 片付けた指摘。resolved は原稿ごと、suppressed は「今後も指摘しない」として残す。 */
     resolved: {},
     suppressed: {},
+    /* 対応済み・直して消えた指摘の履歴（本文から消えても残る）。 */
+    issueArchive: [],
+    showArchive: false,
     /* AI の指摘は解析のたびに作り直さず、引用文字列から位置を取り直して使い回す。 */
     aiIssues: [],
     aiState: null,

@@ -54,6 +54,16 @@
   };
 
   /**
+   * 指摘の履歴を保存する。
+   * @returns {void}
+   */
+  UI.saveArchive = function () {
+    try {
+      localStorage.setItem(UI.STORE.archive, JSON.stringify(UI.state.issueArchive));
+    } catch (e) { /* 同上 */ }
+  };
+
+  /**
    * 保存済みの設定に、既定値から足りないキーを補う。
    * 版が上がって項目が増えても、古い設定のまま起動できるようにするため。
    * @param {Object} cfg 読み込んだ設定
@@ -105,6 +115,9 @@
       UI.state.resolved = marks.resolved || {};
       UI.state.suppressed = marks.suppressed || {};
     }
+
+    var archive = _readJson(UI.STORE.archive);
+    if (Array.isArray(archive)) UI.state.issueArchive = archive;
   };
 
   /**

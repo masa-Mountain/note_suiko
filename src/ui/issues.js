@@ -41,7 +41,10 @@
    */
   UI.dismissIssue = function (issue, mode) {
     if (mode === 'suppressed') UI.state.suppressed[issue.suppressKey] = 1;
-    else UI.state.resolved[issue.fingerprint] = 1;
+    else {
+      UI.state.resolved[issue.fingerprint] = 1;
+      UI.archiveIssue(issue, 'resolved');
+    }
     UI.saveMarks();
     UI.runAnalyze();
   };
@@ -135,12 +138,23 @@
       var showing = UI.state.config.display.showResolved;
       var btn = _chip('片付け済み', r.dismissedCount, !showing, null, function () {
         UI.state.config.display.showResolved = !showing;
+        UI.state.showArchive = false;
         UI.saveConfig();
         UI.renderIssues();
         UI.renderHighlights();
       });
       btn.title = '対応済み・無視にした指摘の表示を切り替えます';
       host.appendChild(btn);
+    }
+
+    if (UI.state.issueArchive.length) {
+      var arch = UI.state.showArchive;
+      var ab = _chip('履歴', UI.state.issueArchive.length, !arch, null, function () {
+        UI.state.showArchive = !arch;
+        UI.renderIssues();
+      });
+      ab.title = '対応済み・直して消えた指摘をあとから見る';
+      host.appendChild(ab);
     }
   };
 
@@ -193,6 +207,18 @@
     }
 
     var list = UI.visibleIssues();
+    if (UI.state.showArchive) {
+      if (!UI.state.issueArchive.length) {
+        host.appendChild(UI.h('div', { class: 'empty', text: '履歴はありません。' }));
+      } else {
+        var frag = document.createDocumentFragment();
+        UI.state.issueArchive.forEach(function (entry) { frag.appendChild(UI.archiveCard(entry)); });
+        host.appendChild(frag);
+      }
+      _restoreIssueScroll(y);
+      return;
+    }
+
     if (!list.length) {
       host.appendChild(UI.h('div', { class: 'empty' }, [
         '表示できる指摘はありません。',

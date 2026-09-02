@@ -97,7 +97,10 @@
         class: 'tiny done',
         onclick: function (ev) {
           ev.stopPropagation();
-          items.forEach(function (it) { UI.state.resolved[it.fingerprint] = 1; });
+          items.forEach(function (it) {
+            UI.state.resolved[it.fingerprint] = 1;
+            UI.archiveIssue(it, 'resolved');
+          });
           UI.saveMarks();
           UI.runAnalyze();
         },
