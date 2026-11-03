@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "推敲 for note",
+  "version": "0.2.11",
+  "description": "note の執筆画面で、誤字や不自然な表現を指摘します。原稿は外に送りません。",
+  "permissions": ["scripting", "storage"],
+  "host_permissions": [
+    "https://note.com/*",
+    "https://editor.note.com/*"
+  ],
+  "background": {
+    "service_worker": "ext/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://note.com/*",
+        "https://editor.note.com/*"
+      ],
+      "js": ["ext/watch.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>推敲 (suikou) — 説明</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --fg: #1c1a16; --fg-2: #5c574e; --line: #d8d2c6;
+    --card: #fffdf8; --accent: #3d5a40;
+  }
+  html { background: var(--bg); color: var(--fg); }
+  body {
+    margin: 0 auto; max-width: 46rem; padding: 2.2rem 1.4rem 4rem;
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+    font-size: 16.5px; line-height: 1.85;
+  }
+  h1 { font-size: 1.7rem; letter-spacing: .08em; margin: 0 0 .6rem; }
+  h2 { font-size: 1.25rem; margin: 2.2rem 0 .7rem; border-bottom: 1px solid var(--line); padding-bottom: .3rem; }
+  h3 { font-size: 1.05rem; margin: 1.5rem 0 .4rem; }
+  p, li { color: var(--fg); }
+  .lead { color: var(--fg-2); }
+  a { color: var(--accent); }
+  code, pre { font-family: Consolas, "Cascadia Mono", monospace; font-size: .88em; }
+  code { background: var(--card); border: 1px solid var(--line); padding: .05em .35em; border-radius: 3px; }
+  pre {
+    background: var(--card); border: 1px solid var(--line); border-radius: 4px;
+    padding: .9rem 1rem; overflow-x: auto; line-height: 1.6;
+  }
+  table { border-collapse: collapse; width: 100%; font-size: .95em; margin: .6rem 0 1.1rem; }
+  th, td { border: 1px solid var(--line); padding: .4rem .55rem; text-align: left; vertical-align: top; }
+  th { background: var(--card); }
+  ul, ol { padding-left: 1.3rem; }
+  .top { font-family: sans-serif; font-size: .85rem; color: var(--fg-2); margin-bottom: 1.6rem; }
+</style>
+</head>
+<body>
+<p class="top"><a href="index.html">アプリを開く</a>　·　同じ内容の Markdown は <a href="README.md">README.md</a></p>
+
+<h1>推敲 (suikou)</h1>
+<p>note でエッセイや小説を書く人のための、<strong>校閲・編集者視点の指摘ツール</strong>。</p>
+<p class="lead">AI に書かせるためのツールではありません。書き上げた原稿を外から眺めるための鏡です。このツールは答えを出しません。<strong>指摘と、考えるための視点だけを返します。</strong></p>
+
+<h2>使い方</h2>
+<p><code>index.html</code> をダブルクリックしてブラウザで開くだけです。インストールもビルドも不要です。</p>
+<p>ブラウザの設定でローカルファイルの読み込みが制限されている場合は、同梱のサーバーを使ってください。</p>
+<pre>powershell -ExecutionPolicy Bypass -File .\serve.ps1
+# http://127.0.0.1:8787/ を開く</pre>
+<p>ルールが意図どおり動いているかは <a href="test.html">test.html</a> を開くと確認できます。</p>
+
+<h3>キーボード</h3>
+<table>
+  <tr><th>キー</th><th>動作</th></tr>
+  <tr><td><code>Ctrl</code> + <code>Enter</code></td><td>待たずに即時解析</td></tr>
+  <tr><td><code>F8</code> / <code>Shift</code> + <code>F8</code></td><td>次 / 前の指摘へ移動</td></tr>
+  <tr><td><code>Ctrl</code> + <code>S</code></td><td>本文を Markdown で保存</td></tr>
+  <tr><td><code>Ctrl</code> + <code>Shift</code> + <code>P</code></td><td>note風プレビューと執筆画面の切り替え</td></tr>
+  <tr><td><code>Ctrl</code> + <code>Shift</code> + <code>L</code></td><td>明るいテーマ / 暗いテーマ</td></tr>
+  <tr><td><code>Ctrl</code> + <code>Shift</code> + <code>F</code></td><td>集中モード（指摘パネルを隠す）</td></tr>
+</table>
+<p>原稿と設定はブラウザの localStorage に自動保存されます。テーマは右上の <code>☾</code> / <code>☀</code> でも切り替えられ、既定は明るいテーマです。</p>
+
+<h3>タブレット・スマホ</h3>
+<p>幅が広い画面（PC や、横向きのタブレット）は、これまでどおり執筆と指摘が並びます。</p>
+<p>幅がおよそ 720px 以下では、下の「執筆」「指摘」で画面を切り替えます。プリセットや取り込みは右上の「メニュー」に入っています。指摘をタップすると執筆側の該当箇所へ移ります。</p>
+<p>同じアドレスを開いても、原稿はその端末のブラウザの中に保存されます。PC の下書きはスマホには自動では出ません。</p>
+
+<h3>GitHub で公開する（スマホの Chrome で開く）</h3>
+<p>アプリのファイルだけを GitHub Pages に置くと、<code>https://（アカウント）.github.io/（リポジトリ名）/</code> で開けます。原稿は GitHub に上がりません。</p>
+<ol>
+  <li>GitHub で新しいリポジトリを作る（無料なら<strong>公開</strong>。非公開の Pages は有料プランが必要です）</li>
+  <li>このフォルダ一式をそのリポジトリに上げる（ビルドは不要です）</li>
+  <li>リポジトリの <strong>Settings → Pages</strong> で、Source を Deploy from a branch、Branch を <code>main</code>（または <code>master</code>）の <code>/ (root)</code> にする</li>
+  <li>数分待つと URL が出ます。タブレット／スマホの Chrome で開き、ブックマークします</li>
+</ol>
+<p>ルートの <code>.nojekyll</code> で Jekyll を切ってあります。パスは相対指定なので、サブフォルダ型の Pages でも動きます。</p>
+
+<h2>設計の前提</h2>
+<h3>1. 既定では通信しない</h3>
+<p>ルールはすべて辞書と規則で、この端末の中だけで動きます。既定の状態でネットワークに出ることはありません。</p>
+<ul>
+  <li><strong>R-18 を含むどんな原稿も、検閲も送信もされない</strong></li>
+  <li>未公開の原稿が第三者のサーバーに残らない</li>
+  <li>なぜ指摘されたのかが全部読める</li>
+  <li>オフラインで動き、無料で、API の仕様変更で壊れない</li>
+</ul>
+<p>規則で扱えないのは文意です。そこだけを言語モデルに読ませる口を別に用意しています（「AI 補助」）。<strong>既定はオフ</strong>で、有効にしてもボタンを押した瞬間しか送信しません。</p>
+
+<h3>2. 本文を書き換えない</h3>
+<p>自動修正機能はありません。言い換え候補は出しますが、置換ボタンは付けません。候補はクリックでコピーできるだけです。</p>
+<p>既定では<strong>候補を伏せています</strong>（設定で変更可）。「候補を見る」を押すまで表示されないので、まず自分の言葉で考えられます。</p>
+<p>例外は表記統一だけです。「できる／出来る」の統一は、設定でオンにすると一括置換ボタンが出ます。既定はオフです。</p>
+
+<h3>3. 「間違い」と「気になる箇所」を分ける</h3>
+<table>
+  <tr><th>段階</th><th>意味</th></tr>
+  <tr><td>要修正</td><td>直したほうがいい。誤字、括弧の閉じ忘れ、個人情報の混入など</td></tr>
+  <tr><td>検討</td><td>読者がつまずく可能性がある。長文、表記の揺れ、重言など</td></tr>
+  <tr><td>確認</td><td>意図的ならそのままで構わない。同音異義語、受け身の多用など</td></tr>
+  <tr><td>参考</td><td>気づいていないかもしれない傾向。五感の偏り、語彙の多様性など</td></tr>
+</table>
+
+<h3>4. 見た指摘は消せる</h3>
+<table>
+  <tr><th>ボタン</th><th>動作</th></tr>
+  <tr><td>✓ 対応済み</td><td>直した・読んだ指摘を隠す。別の場所を編集しても印は外れません</td></tr>
+  <tr><td>⊘ 今後も無視</td><td>ルールと語の組み合わせで登録する。別の原稿でも出なくなる</td></tr>
+</table>
+<p>隠した指摘はフィルタの「片付け済み」で呼び戻せます。まとめて戻すには設定タブの「片付けた指摘」を使ってください。</p>
+
+<h2>note との受け渡し</h2>
+<p>日常は note のエディタからコピーして貼る／推敲から「note用HTMLをコピー」して貼る、の往復です。一括は WXR / MT の書き出しと、note のエクスポート ZIP の読み込みです。</p>
+
+<h3>推敲記法</h3>
+<p>エディタ直上のバーで、選択した行に見出し・引用・箇条書きなどを付けられます。もう一度押すと外します。画像はファイル選択・貼り付け・ドロップで入れます（note へ渡すときは note 側で貼り直してください）。</p>
+<table>
+  <tr><th>記法</th><th>note のブロック</th></tr>
+  <tr><td><code># 見出し</code></td><td>見出し（大）</td></tr>
+  <tr><td><code>## 見出し</code></td><td>見出し（小）</td></tr>
+  <tr><td><code>&gt; 引用</code></td><td>引用</td></tr>
+  <tr><td><code>- 項目</code> / <code>1. 項目</code></td><td>箇条書き / 番号付きリスト</td></tr>
+  <tr><td><code>**太字**</code></td><td>太字</td></tr>
+  <tr><td><code>---</code></td><td>区切り線</td></tr>
+  <tr><td><code>[目次]</code></td><td>目次ブロック</td></tr>
+  <tr><td><code>![説明](URL)</code></td><td>画像</td></tr>
+  <tr><td>URL だけの行</td><td>埋め込みカード</td></tr>
+  <tr><td><code>｜漢字《ふりがな》</code></td><td>ルビ</td></tr>
+  <tr><td><code>```</code></td><td>コード</td></tr>
+  <tr><td><code>===有料ライン===</code></td><td>有料エリアの境界（目印）</td></tr>
+</table>
+
+<h3>note → 推敲</h3>
+<ul>
+  <li>note のエディタで Ctrl+A → Ctrl+C し、推敲に貼る（または「取り込み ▾」）。HTML から見出し・引用・箇条書き・太字などを記法に戻します。</li>
+  <li>タイトル横の「消す」で、確認のあとタイトルと本文を空にします。</li>
+  <li>note のエクスポート ZIP を解いた XML / MT形式の txt は「取り込み ▾」から開けます。</li>
+</ul>
+
+<h3>推敲 → note</h3>
+<table>
+  <tr><th>方法</th><th>使いどき</th></tr>
+  <tr><td><strong>note用HTMLをコピー</strong></td><td>日常用。note のエディタに貼ると装飾が残ります</td></tr>
+  <tr><td>WXR形式で保存（.xml）</td><td>note の 設定 &gt; インポート。下書きとして入ります</td></tr>
+  <tr><td>MT形式で保存（.txt）</td><td>WXR で通らなかったときの代替</td></tr>
+  <tr><td>文字だけコピー</td><td>記号を外した素の本文</td></tr>
+</table>
+<p>手元の画像は note で貼り直す必要があります。埋め込みは URL のテキストとして入ります。</p>
+
+<h3>note風プレビュー</h3>
+<p>タイトル欄の下の「note風プレビュー」で、載せたときの見え方に切り替わります。指摘をクリックすると、その段落が強調されます。</p>
+<p>表・脚注・斜体・取り消し線・3 階層以上の見出し・入れ子リストは note に無いので、渡し方にかかわらず警告します。</p>
+
+<h2>何を見ているか</h2>
+<p>ルールは設定タブで個別にオン／オフ、深刻度、閾値を変えられます。分類は次のとおりです。</p>
+<ul>
+  <li><strong>誤字・誤用</strong> — 慣用句の誤り、ら抜き・さ入れ、二重敬語、重言、同音異義語、括弧、記号、副詞の呼応</li>
+  <li><strong>表記の揺れ</strong> — できる／出来る など、敬体と常体、一人称、数、句読点</li>
+  <li><strong>表現・違和感</strong> — 長文、文末の連続、近接反復、接続詞、受け身、二重否定、冗長表現など</li>
+  <li><strong>語彙・単調さ</strong> — 頻出語、抽象語、五感の偏り、語彙の多様性</li>
+  <li><strong>構成・リズム</strong> — 段落の長さ、冒頭の掴み、結び、見出しの間隔</li>
+  <li><strong>note 最適化</strong> — 長さ、使えない記法、空行、視覚要素、タイトル、有料ライン、生 URL</li>
+  <li><strong>レーティング</strong> — 全年齢（厳格）／全年齢／R-18</li>
+  <li><strong>リスク・配慮</strong> — 実在の人物、個人情報、配慮表現、根拠のない断定、禁止語</li>
+</ul>
+
+<h2>レーティングの扱い</h2>
+<p><strong>全年齢</strong>では、性的・暴力的に読まれうる語を拾い、示唆にとどめる方向の視点を返します。削れとは言いません。</p>
+<p><strong>R-18</strong>では性的表現そのものは指摘しません。未成年を示す語と性的文脈の共起、ゾーニング（冒頭の注意書きと露出）、官能描写の語彙の単調さを見ます。</p>
+<p>露骨な語は内蔵辞書に入れていません。検出したい語は「設定 &gt; ユーザー辞書 &gt; 追加で検出したい語」に登録してください。</p>
+
+<h2>AI 補助（任意・既定オフ）</h2>
+<p>論理の飛躍や主張と根拠のずれなど、意味を読まないと判定できない点だけを渡します。誤字や表記揺れは規則側に任せ、プロンプトでも禁じています。返ってくるのは指摘だけで、書き換え文は求めません。</p>
+<p>既定オフ。ボタンを押した瞬間しか送信せず、送る内容は事前に全文表示します。R-18 では localhost 以外への送信をブロックします（設定で明示的に解除しないかぎり）。外部 API より、この端末の Ollama / LM Studio / llama.cpp を勧めています。</p>
+<pre>Ollama    : http://localhost:11434/v1/chat/completions
+LM Studio : http://localhost:1234/v1/chat/completions
+llama.cpp : http://localhost:8080/v1/chat/completions</pre>
+<p>ブラウザから localhost に通信するには、モデル側で CORS を許す必要があります。API キーは localStorage に平文で残ります。</p>
+
+<h2>誤検知について</h2>
+<ol>
+  <li><strong>複合語ガード</strong> — 「慢性的」の中の「性的」など、漢字の複合語の一部は捨てます。</li>
+  <li><strong>除外語リスト</strong> — 「裸足」のようにガードでは拾えないものを並べています。</li>
+  <li><strong>確実なものだけ見る</strong> — 助詞の「のの」は「ものの」「ののしる」に当たるので外しています。</li>
+</ol>
+<p>自分の文章に特有の誤検知は、指摘カードの「⊘ 今後も無視」か、ユーザー辞書の「指摘しない語」で止めてください。</p>
+
+<h2>読者像の推定</h2>
+<p>当てにいくのではなく、書き上げた文章を外から見るための計量です。硬さ・距離・内省・抽象度などの軸、ジャンル、想定読者、噛み合っていない点、頻出語を出します。診断タブには段落ごとの読みの負荷ヒートマップもあります。</p>
+
+<h2>プリセット</h2>
+<table>
+  <tr><th>プリセット</th><th>用途</th></tr>
+  <tr><td>エッセイ（全年齢・標準）</td><td>標準。校正は厳しく、表現は提案どまり</td></tr>
+  <tr><td>硬派な論考・評論</td><td>常体。冗長・ぼかし・抽象語に厳しい</td></tr>
+  <tr><td>日記・雑記（ゆるめ）</td><td>誤字と表記揺れだけ</td></tr>
+  <tr><td>小説（全年齢）</td><td>会話文の慣習、段落、体言止めを小説寄りに</td></tr>
+  <tr><td>小説（R-18・成人向け）</td><td>性的表現は指摘せず、年齢設定・単調さを厳しく</td></tr>
+  <tr><td>ビジネス・技術記事</td><td>敬体。曖昧さと表記の不統一に厳しい</td></tr>
+  <tr><td>教育・公共向け（厳格）</td><td>誰が読んでも問題ないことを最優先</td></tr>
+  <tr><td>最小限（誤字だけ）</td><td>執筆中に邪魔されたくないとき</td></tr>
+</table>
+<p>プリセットは出発点です。設定タブで調整したうえで JSON に書き出せます。</p>
+
+<h2>ユーザー辞書</h2>
+<table>
+  <tr><th>種類</th><th>用途</th></tr>
+  <tr><td>指摘しない語</td><td>固有名詞、造語。この語を含む箇所は全ルールの対象外</td></tr>
+  <tr><td>表記の統一ルール</td><td><code>推敲 = 推稿, すいこう</code> のように自分の表記を強制する</td></tr>
+  <tr><td>自分用の言い換え候補</td><td>内蔵辞書に語彙を足す</td></tr>
+  <tr><td>使わない語</td><td>自分で禁じた語。「要修正」で出る</td></tr>
+  <tr><td>追加で検出したい語</td><td>レーティング用。R-18 の共起チェックにも使う</td></tr>
+</table>
+
+<h2>ファイル構成の要点</h2>
+<p>アプリ本体は <code>index.html</code>。規則は <code>src/core/</code>、画面は <code>src/ui/</code> です。自己テストは <code>test.html</code>。ローカルサーバーは <code>serve.ps1</code>（任意）。GitHub Pages 用に <code>.nojekyll</code> があります。</p>
+<p>ルールを足す場合は <code>Suikou.registerRule</code> で登録し、<code>index.html</code> にスクリプトを足し、<code>test.html</code> に検証を書いてください。辞書に 1 語足すだけなら <code>src/core/dict-language.js</code> で足ります。</p>
+
+<h2>限界</h2>
+<ul>
+  <li>形態素解析器を使っていないので、語の切り出しは文字種の切り替わりによる近似です。</li>
+  <li>規則だけでは文意を理解しません。論理の飛躍は AI 補助を自分で有効にしたときだけ見られます。</li>
+  <li>読者像は計量からの逆算で、統計モデルではありません。</li>
+  <li>WXR / MT の実機検証はしていません。通らなければ「note用HTMLをコピー」を使ってください。</li>
+  <li>note の HTML 構造は予告なく変わります。一般的な見出し・引用・リストは拾えますが、新しいブロックは文字として入ります。</li>
+</ul>
+</body>
+</html>
