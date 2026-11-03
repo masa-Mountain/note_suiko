@@ -1,0 +1,29 @@
+【プロジェクト】推敲 (suikou) — note 執筆支援。依存ライブラリなしの古典スクリプト。原稿は端末外に出さない（任意の AI 補助を除く）。
+
+【リポジトリ／公開】
+- GitHub Pages: https://masa-mountain.github.io/note_suiko/
+- リポジトリ想定: masa-mountain/note_suiko
+- 詳細引き継ぎ: リポジトリ内の HANDOVER.md を必ず読んでから作業する
+- ローカル作業フォルダ例: C:\Users\kurok\suikou（作業PCに git / Node が無い場合あり。更新は GitHub の Upload files で上書きしてきた）
+
+【構成】
+- Web: index.html + src/core/* + src/ui/* + styles.css（file:// または serve.ps1）
+- Chrome 拡張「推敲 for note」: manifest.json（0.2.11）+ ext/*。note 執筆画面用。note-stats-ext は触らない
+- 自己テスト: test.html（直近 129/129、ルール総数 71）
+
+【直近まで完了】
+1. note 往復の行間・対応済み履歴・類語・目次 [目次]
+2. note 用拡張（パネル移動・しまう、グループ化、見出し #/>、選択の2箇所目修正）
+3. タイトル評価（生成AIなし）Web＋拡張。未読の入口欄、5項目目は未読視点、連番は事実表示のみ
+
+【守ること】
+- 日本語。Plan→Act→Reflect。実装前に計画→ユーザーの「GO」後に変更（明確なバグは例外あり）
+- タイトルの自動生成・自動採点をしない。外部API不要機能は通信しない
+- 本文を勝手に書き換えない
+- 〜100行/ファイル目安、JSDoc、ファイル内専用は _ 接頭辞、YAGNI/KISS
+- 拡張変更後は chrome://extensions 再読込＋執筆画面を開き直す
+
+【今回やりたいこと】
+（ここに次の具体タスクを書く）
+
+完了したら HANDOVER.md の該当箇所が古くなっていれば更新すること。
