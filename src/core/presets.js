@@ -232,6 +232,8 @@
         allowRemoteForR18: false
       },
       allowUnify: false,        // 表記統一のみ一括置換を許可するか
+      craftStrict: false,       // 追加の執筆チェック（語リスト増・深刻度上げ）
+      craftUnlocked: false,     // 設定UIで追加チェックを表示するか（隠し解除）
       dictionary: {
         ignore: '',      // 誤検知させたくない語（固有名詞など）
         banned: '',      // 使わない語

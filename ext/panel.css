@@ -95,6 +95,13 @@
   padding: 4px 6px;
 }
 
+#suikou-note-prefs .suikou-craft {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .suikou-flag.is-on {
   background: #efece6;
   border-color: #a67c1f;
