@@ -26,6 +26,8 @@
     S.config.applyPreset(cfg, prefs.presetId || 'essay-general');
     if (prefs.rating) cfg.rating = prefs.rating;
     if (prefs.style) cfg.style = prefs.style;
+    cfg.craftStrict = !!prefs.craftStrict;
+    cfg.craftUnlocked = !!prefs.craftUnlocked || !!prefs.craftStrict;
     return cfg;
   };
 
@@ -35,7 +37,10 @@
    * @returns {void}
    */
   E.readPrefs = function (done) {
-    chrome.storage.local.get({ presetId: 'essay-general', rating: 'all-ages', style: 'auto' }, function (prefs) {
+    chrome.storage.local.get({
+      presetId: 'essay-general', rating: 'all-ages', style: 'auto',
+      craftStrict: false, craftUnlocked: false
+    }, function (prefs) {
       done(prefs);
     });
   };
@@ -65,6 +70,13 @@
   E.mountPrefs = function (onChange, prefs) {
     var host = document.getElementById('suikou-note-prefs');
     if (!host || host.childNodes.length) return;
+    var state = {
+      presetId: prefs.presetId,
+      rating: prefs.rating,
+      style: prefs.style,
+      craftStrict: !!prefs.craftStrict,
+      craftUnlocked: !!prefs.craftUnlocked || !!prefs.craftStrict
+    };
     var preset = document.createElement('select');
     var rating = document.createElement('select');
     var style = document.createElement('select');
@@ -79,9 +91,11 @@
      * @returns {void}
      */
     function _emit() {
-      var next = { presetId: preset.value, rating: rating.value, style: style.value };
-      chrome.storage.local.set(next);
-      onChange(next);
+      state.presetId = preset.value;
+      state.rating = rating.value;
+      state.style = style.value;
+      chrome.storage.local.set(state);
+      onChange(state);
     }
 
     preset.addEventListener('change', function () {
@@ -95,5 +109,38 @@
     host.appendChild(preset);
     host.appendChild(rating);
     host.appendChild(style);
+
+    if (state.craftUnlocked) {
+      var label = document.createElement('label');
+      label.className = 'suikou-craft';
+      var box = document.createElement('input');
+      box.type = 'checkbox';
+      box.checked = state.craftStrict;
+      box.addEventListener('change', function () {
+        state.craftStrict = !!box.checked;
+        _emit();
+      });
+      label.appendChild(box);
+      label.appendChild(document.createTextNode(' 追加チェック'));
+      host.appendChild(label);
+    }
+
+    var foot = document.querySelector('#suikou-note-panel .suikou-foot');
+    if (foot && !foot.getAttribute('data-craft-tap')) {
+      var taps = 0;
+      var timer = null;
+      foot.setAttribute('data-craft-tap', '1');
+      foot.addEventListener('click', function (ev) {
+        if (ev.target.tagName === 'A') return;
+        taps += 1;
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(function () { taps = 0; }, 1600);
+        if (taps < 5 || state.craftUnlocked) return;
+        state.craftUnlocked = true;
+        chrome.storage.local.set(state);
+        host.textContent = '';
+        E.mountPrefs(onChange, state);
+      });
+    }
   };
 })(globalThis);

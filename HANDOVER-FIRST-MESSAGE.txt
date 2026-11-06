@@ -9,12 +9,13 @@
 【構成】
 - Web: index.html + src/core/* + src/ui/* + styles.css（file:// または serve.ps1）
 - Chrome 拡張「推敲 for note」: manifest.json（0.2.11）+ ext/*。note 執筆画面用。note-stats-ext は触らない
-- 自己テスト: test.html（直近 129/129、ルール総数 71）
+- 自己テスト: test.html（直近 141/141、ルール総数 75）
 
 【直近まで完了】
 1. note 往復の行間・対応済み履歴・類語・目次 [目次]
 2. note 用拡張（パネル移動・しまう、グループ化、見出し #/>、選択の2箇所目修正）
 3. タイトル評価（生成AIなし）Web＋拡張。未読の入口欄、5項目目は未読視点、連番は事実表示のみ
+4. 執筆癖4点（言い換え二周・一般論結び・ふんわり冒頭・抽象タイトル）＋隠し craftStrict
 
 【守ること】
 - 日本語。Plan→Act→Reflect。実装前に計画→ユーザーの「GO」後に変更（明確なバグは例外あり）

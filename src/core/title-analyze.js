@@ -78,11 +78,12 @@
   }
 
   /**
-   * タイトルに含まれる事実。
+   * タイトルに含まれる事実。良し悪しは書かない。
    * @param {string} text タイトル
    * @returns {{chars: number, questionMark: boolean, exclaimMark: boolean, number: boolean,
    *            questionPhrases: string[], emotionWords: string[], abstractWords: string[],
-   *            concreteWords: string[], seriesMark: string}} 事実
+   *            concreteWords: string[], seriesMark: string, abstractOnly: boolean,
+   *            hasEventCue: boolean}} 事実
    */
   S.titleFacts = function (text) {
     var body = _trim(text);
@@ -90,16 +91,26 @@
     var concrete = _hits(body, words.concrete || []);
     concrete = _addMatches(body, TIME_RE, concrete);
     concrete = _addMatches(body, PLACE_RE, concrete);
+    var abstractWords = _hits(body, words.abstract || []);
+    var emotionWords = _hits(body, words.emotion || []);
+    var questionMark = /[?？]/.test(body);
+    var number = /[0-9０-９]/.test(body);
+    var hasEventCue = concrete.length > 0 || number ||
+      /[、,・]/.test(body) || /(?:した|して|すぎた|つまんない|つまらない)/.test(body);
+    var abstractOnly = abstractWords.length > 0 && concrete.length === 0 &&
+      !number && emotionWords.length === 0 && !questionMark && !hasEventCue;
     return {
       chars: body.length,
-      questionMark: /[?？]/.test(body),
+      questionMark: questionMark,
       exclaimMark: /[!！]/.test(body),
-      number: /[0-9０-９]/.test(body),
+      number: number,
       questionPhrases: _hits(body, words.question || []),
-      emotionWords: _hits(body, words.emotion || []),
-      abstractWords: _hits(body, words.abstract || []),
+      emotionWords: emotionWords,
+      abstractWords: abstractWords,
       concreteWords: concrete,
-      seriesMark: _seriesMark(body)
+      seriesMark: _seriesMark(body),
+      abstractOnly: abstractOnly,
+      hasEventCue: hasEventCue
     };
   };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

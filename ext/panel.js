@@ -23,7 +23,7 @@
       '<button type="button" class="suikou-flag" data-note-mode="titles">タイトル</button></div>' +
       '<div id="suikou-note-filters"></div>' +
       '<div id="suikou-note-list"></div><div id="suikou-note-titles"></div>' +
-      '<p class="suikou-foot"><a href="https://masa-mountain.github.io/note_suiko/" target="_blank" rel="noopener">辞書・詳細設定</a></p></div>';
+      '<p class="suikou-foot">推敲 <a href="https://masa-mountain.github.io/note_suiko/" target="_blank" rel="noopener">辞書・詳細設定</a></p></div>';
     document.documentElement.appendChild(el);
     el.querySelector('#suikou-note-toggle').addEventListener('click', function () {
       if (E.placeMoved) {

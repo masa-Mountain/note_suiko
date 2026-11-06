@@ -351,6 +351,49 @@
           errs.map(function (e) { return e.ruleId + ': ' + e.advice; }).join(' / '));
       });
 
+    /* ---- 執筆癖（汎用／craftStrict） ---- */
+    var pad = 'ここに本文が続きます。場面があり、身体の反応がある。'.repeat(8);
+    var padLong = 'ここに本文が続きます。場面があり、身体の反応がある。朝も夜も同じ足取りで歩いた。'.repeat(12);
+    expectRule('執筆: 言い換え二周',
+      '彼は黙った。つまり何も言えなかったのだ。' + pad, 'craft.restate');
+    expectNoRule('執筆: 言い換えなし',
+      '彼は黙った。窓の外で雨が降っていた。' + pad, 'craft.restate');
+    expectNoRule('執筆: strict語はオフ時に出ない',
+      '彼は黙った。換言すれば何も言えなかった。' + pad, 'craft.restate');
+    expectRule('執筆: strict語はオンで出る',
+      '彼は黙った。換言すれば何も言えなかった。' + pad, 'craft.restate', 1,
+      { craftStrict: true });
+    var closingBody = '朝、駅前で立ち止まった。\n\n靴の泥を落とした。誰にも言えなかった一言が残る。\n\n'
+      + '結局、素直さが大事だと思う。';
+    expectRule('執筆: 一般論の結び', closingBody + '\n\n' + padLong, 'craft.closing-generic');
+    expectNoRule('執筆: 具体で閉じる',
+      '朝、駅前で立ち止まった。\n\n靴の泥を落とした。\n\n最後に、母の名前を呼んだ。\n\n' + padLong,
+      'craft.closing-generic');
+    expectRule('執筆: ふんわり冒頭',
+      '最近思うことがある。文章は難しい。' + pad, 'craft.opening-soft');
+    expectNoRule('執筆: 場面の冒頭',
+      '靴の紐が切れた。駅の階段で立ち止まった。' + pad, 'craft.opening-soft');
+    (function () {
+      var r = S.analyze({
+        text: padLong, title: '人生の意味', hashtags: [],
+        config: S.config.defaults(), resolved: {}, suppressed: {}
+      });
+      check('執筆: 抽象タイトル発火', hits(r, 'craft.title-abstract').length >= 1,
+        '件数 ' + hits(r, 'craft.title-abstract').length);
+      var concreteTitle = S.analyze({
+        text: padLong, title: '子どもと遊ぶのつまんない', hashtags: [],
+        config: S.config.defaults(), resolved: {}, suppressed: {}
+      });
+      check('執筆: 具体タイトルは出さない',
+        hits(concreteTitle, 'craft.title-abstract').length === 0);
+      var absFacts = S.titleFacts('人生の意味');
+      check('タイトル: abstractOnly', absFacts.abstractOnly === true);
+      var eventFacts = S.titleFacts('子どもと遊ぶのつまんない');
+      check('タイトル: 出来事の手がかり',
+        eventFacts.hasEventCue === true && eventFacts.abstractOnly === false,
+        JSON.stringify({ cue: eventFacts.hasEventCue, only: eventFacts.abstractOnly }));
+    })();
+
     /* ---- タイトルの事実（採点しない） ---- */
     var sample = 'なぜ、この街で3年も悲しかったのか？';
     var facts = S.titleFacts(sample);

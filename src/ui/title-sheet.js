@@ -11,8 +11,30 @@
    * @param {string} text タイトル案
    * @returns {void}
    */
+  /**
+   * 採点しない視点メモ。語句の有無から読むだけ。
+   * @param {Object} facts titleFacts の結果
+   * @param {boolean} strict craftStrict
+   * @returns {string[]} 行
+   */
+  function _perspectiveLines(facts, strict) {
+    var lines = [];
+    if (facts.abstractOnly) {
+      lines.push('抽象的な語に寄っています。出来事や言いにくい主張をそのまま名前にできないか。');
+    } else if (facts.hasEventCue || facts.concreteWords.length) {
+      lines.push('具体や出来事の手がかりがあります。問いや並列なら、具体が先に見える形かも。');
+    } else {
+      lines.push('出来事・主張・問いの手がかりを、タイトル単体でも見えるか。');
+    }
+    if (strict) {
+      lines.push('きれいなテーマ名だけで終わっていないか。問うなら出来事のあとに置く。');
+    }
+    return lines;
+  }
+
   function _fillFacts(box, text) {
     var facts = S.titleFacts(text);
+    var strict = !!(UI.state && UI.state.config && UI.state.config.craftStrict);
     var lines = [
       '文字数 ' + facts.chars,
       facts.questionMark ? '疑問符あり' : '疑問符なし',
@@ -21,12 +43,17 @@
       '疑問の言い方: ' + (facts.questionPhrases.join('、') || '該当なし'),
       '感情の語: ' + (facts.emotionWords.join('、') || '該当なし'),
       '抽象的な語: ' + (facts.abstractWords.join('、') || '該当なし'),
-      '時間・場所・出来事: ' + (facts.concreteWords.join('、') || '該当なし')
+      '時間・場所・出来事: ' + (facts.concreteWords.join('、') || '該当なし'),
+      facts.hasEventCue ? '出来事の手がかりあり' : '出来事の手がかりなし',
+      facts.abstractOnly ? '抽象寄り（事実）' : '抽象だけではない（事実）'
     ];
     if (facts.seriesMark) lines.push('連番: ' + facts.seriesMark);
     box.textContent = '';
     lines.forEach(function (line) {
       box.appendChild(UI.h('span', { class: 'title-chip', text: line }));
+    });
+    _perspectiveLines(facts, strict).forEach(function (line) {
+      box.appendChild(UI.h('p', { class: 'title-lead', text: line }));
     });
   }
 

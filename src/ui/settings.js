@@ -125,5 +125,6 @@
     UI.renderAiSettings(host, cfg);
     UI.renderDictSettings(host, cfg);
     UI.renderRuleList(host, cfg);
+    UI.renderCraftSettings(host, cfg);
   };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
